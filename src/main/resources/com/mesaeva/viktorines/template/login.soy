@@ -1,0 +1,35 @@
+/**
+ * Login page
+ * @param? error : bool
+ */
+{deltemplate content variant="'login'"}
+<br><br>
+<br><br>
+<div class="row">
+  <div class="col-sm-offset-4 col-sm-4">
+  {if $error}
+    <div class="panel panel-warning">
+      <div class="panel-heading">
+        <h3 class="panel-title">Неверный логин и/или пароль</h3>
+      </div>
+    </div>
+  {/if}
+  <form class="form-horizontal" method="POST">
+    {call forms.formInputGroup}
+      {param id : 'username'/}
+      {param label : 'Логин'/}
+      {param name : 'username'/}
+      {param type : 'text'/}
+    {/call}
+    {call forms.formInputGroup}
+      {param id : 'password'/}
+      {param label : 'Пароль'/}
+      {param name : 'password'/}
+      {param type : 'password'/}
+    {/call}
+    <input type="hidden"  name="{$ij.csrfName}" value="{$ij.csrfValue}"/>
+    <button type="submit" class="center-block btn btn-primary">Войти</button>
+  </form>
+  </div>
+</div>
+{/deltemplate}

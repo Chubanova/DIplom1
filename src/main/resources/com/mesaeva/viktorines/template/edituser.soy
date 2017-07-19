@@ -1,0 +1,25 @@
+{namespace edituser}
+/**
+* @param? formData : map<String, ?>
+* @param? teachers : list
+* @param? roles : list
+* @param? isAdmin : list
+* @param? role
+* @param? teacherName
+*/
+{deltemplate content variant="'editProfile'"}
+       <div class="page-header">
+               <h1>Редактирование профиля</h1>
+       </div>
+       <div class="row">
+           <div class="col-sm-6">
+               {call forms.formEditUser data="$formData" }
+                {param teachers : $teachers /}
+                {param roles : $roles /}
+                {param isAdmin : $isAdmin /}
+                {param teacherName : $teacherName /}
+                {param role : $role /}
+               {/call}
+           </div>
+       </div>
+{/deltemplate}

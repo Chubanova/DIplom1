@@ -1,0 +1,17 @@
+/**
+ * User registration form
+ * @param? formData : map
+ */
+{deltemplate content variant="'newquestion'"}
+<div class="page-header">
+        <h1>Создание нового вопроса</h1>
+</div>
+
+<div class="row">
+           <div class="col-sm-6">
+               {call forms.simpleForm data="$formData"}
+               {/call}
+           </div>
+</div>
+{/deltemplate}
+

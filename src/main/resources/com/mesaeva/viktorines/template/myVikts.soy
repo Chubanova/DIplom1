@@ -1,0 +1,84 @@
+{namespace myVikts}
+/**
+* @param? vikts : list<[id : int,
+                        name : string,
+                        id_discipline : int,
+                        id_user : int,
+
+*/
+{deltemplate content variant="'myViktorines'"}
+    <div class="page-header">
+        <h1>Викторины</h1>
+    </div>
+    <form action="/new">
+        <button class="btn-addnu" type="submit">Добавить викторину</button>
+    </form>
+    <div class="row">
+        <table class="table-users">
+            <tr class="tr-users">
+                <th class="th-users"><b>Название</b></th>
+                <th class="th-users"><b>Дисциплина</b></th>
+                <th class="th-users"></th>
+                <th class="th-users"></th>
+                <th class="th-users"></th>
+            </tr>
+            {foreach $vikt in $vikts}
+                <tr class="tr-users">
+                    <td class="td-users">{$vikt.viktName}</td>
+                    <td class="td-users">{$vikt.viktDiscipline}</td>
+                    <td class="td-users td-users-btn">
+                    <form method="GET" action="/viktorine">
+                        <input type="hidden" name="viktId" value="{$vikt.viktId}"/>
+                        <input type="hidden"  name="{$ij.csrfName}" value="{$ij.csrfValue}"/>
+                        <button type="submit" class="btn-vikt-start">Начать</button>
+                    </form>
+                    </td>
+                    <td class="td-users td-users-btn">
+                    <form method="GET" action="/new">
+                        <input type="hidden" name="edit" value="true"/>
+                        <input type="hidden" name="viktId" value="{$vikt.viktId}"/>
+                        <input type="hidden"  name="{$ij.csrfName}" value="{$ij.csrfValue}"/>
+                        <button type="submit" class="btn-user-edit">Редактировать</button>
+                    </form>
+                    </td>
+                    <td class="td-users td-users-btn">
+                    <form method="POST">
+                        <input type="hidden" name="viktId" value="{$vikt.viktId}"/>
+                        <input type="hidden"  name="{$ij.csrfName}" value="{$ij.csrfValue}"/>
+                        <button type="submit" class="btn-user-remove">Удалить</button>
+                    </form>
+                    </td>
+            {ifempty}
+                <td class="td-users">No content</td>
+            </tr>
+            {/foreach}
+        </table>
+    </div>
+
+{/deltemplate}
+
+/**
+*  page
+* @param? vikts : list<[id : int,
+                        name : string,
+                        id_discipline : int,
+                        id_user : int,
+
+*/
+{deltemplate content variant="'viktorines'"}
+    <script src="/static/js/soyutils.js"></script>
+    <script src="/static/js/viktorines.js"></script>
+    <script>
+        var csrf = {$ij.csrfValue};
+    </script>
+    <br><br><br>
+    <div class="vikts">
+        {foreach $v in $vikts}
+            <p  class="vikt">
+            <input type="radio" name="viktId" value="{$v.viktId}"> {$v.viktDiscipline}: {$v.viktName}</input>
+            </p>
+        {/foreach}
+        <br><br>
+        <button onclick="submit()" class="btn-vikt-start btn-center">Начать</button>
+    </div>
+{/deltemplate}

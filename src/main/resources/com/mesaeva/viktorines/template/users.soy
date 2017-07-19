@@ -1,0 +1,70 @@
+{namespace myTrips}
+/**
+* Admin users page
+* @param? users : list<[userid: int,
+                        login : string,
+                        username : string,
+                        enabled : int,
+                        role : string]>
+* @param? user
+*/
+{deltemplate content variant="'users'"}
+    <div class="page-header">
+        <h1>Управление пользователями</h1>
+    </div>
+    <form action="/newuser">
+        <button class="btn-addnu" type="submit">Добавить нового пользователя</button>
+    </form>
+    <div class="row">
+        <table class="table-users">
+            <tr class="tr-users">
+                <th class="th-users"><b>ИД</b></th>
+                <th class="th-users"><b>Логин</b></th>
+                <th class="th-users"><b>Имя</b></th>
+                <th class="th-users"><b>Активен</b></th>
+                <th class="th-users"><b>Роль</b></th>
+                <th class="th-users"></th>
+                <th class="th-users"></th>
+            </tr>
+            {if $user}
+                <tr class="tr-users">
+                    <td class="td-users">{$user.userid}</td>
+                    <td class="td-users">{$user.login}</td>
+                    <td class="td-users">{$user.username}</td>
+                    <td class="td-users">{$user.enabled}</td>
+                    <td class="td-users">{$user.role}</td>
+                    <form method="POST">
+                        <td class="td-users td-users-btn">
+                        <input type="hidden" name="useridForEdit" value="{$user.userid}"/>
+                        <input type="hidden"  name="{$ij.csrfName}" value="{$ij.csrfValue}"/>
+                        <button class="btn-user-edit" type="submit">Редактировать</button>
+                        </td>
+                    </form>
+                    <td class="td-users td-users-btn"></td>
+            {/if}
+            {foreach $u in $users}
+                <tr class="tr-users">
+                    <td class="td-users">{$u.userid}</td>
+                    <td class="td-users">{$u.login}</td>
+                    <td class="td-users">{$u.username}</td>
+                    <td class="td-users">{$u.enabled}</td>
+                    <td class="td-users">{$u.role}</td>
+                    <form method="POST">
+                        <td class="td-users td-users-btn">
+                        <input type="hidden" name="useridForEdit" value="{$u.userid}"/>
+                        <input type="hidden"  name="{$ij.csrfName}" value="{$ij.csrfValue}"/>
+                        <button class="btn-user-edit" type="submit">Редактировать</button>
+                        </td>
+                    </form>
+                    <form method="POST">
+                         <td class="td-users td-users-btn">
+                         <input type="hidden" name="useridForRemove" value="{$u.userid}"/>
+                         <input type="hidden"  name="{$ij.csrfName}" value="{$ij.csrfValue}"/>
+                         <button class="btn-user-remove" type="submit">Удалить</button>
+                         </td>
+                    </form>
+                </tr>
+            {/foreach}
+        </table>
+     </div>
+{/deltemplate}

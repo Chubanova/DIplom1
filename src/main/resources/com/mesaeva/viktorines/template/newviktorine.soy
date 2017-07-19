@@ -1,0 +1,73 @@
+/**
+ * Create viktorine form for admin
+ * @param? disciplines : list<[ discipline : string,]
+ * @param? teachers : list
+ * @param? disciplineName : string
+ * @param? teacherName : string
+ * @param? viktName : string
+ * @param? viktId : string
+ */
+{deltemplate content variant="'newviktorine'"}
+    <script src="/static/js/vikt_manage.js"></script>
+    <script src="/static/js/soyutils.js"></script>
+    <script>
+        var csrf = {$ij.csrfValue};
+        var viktId = 0;
+        {if $viktId}
+            viktId = {$viktId};
+        {/if}
+     </script>
+    <div id='control-btns' class='nv-control-btns'></div>
+    <div id = "newviktall" style="margin-bottom: 90px;">
+        <div class="page-header text-center">
+            <h1>Создание новой викторины</h1>
+        </div>
+        <div class="col-sm-8-nv">
+            <div class="form-group form-group-e">
+                <label class="col-sm-4 control-label">Название</label>
+                <div class="col-sm-8">
+                    <input id = "name" class = "form-control" type="text" name="name" value="{if $viktName}{$viktName}{/if}">
+                </div>
+            </div><br>
+            <div class="form-group form-group-e">
+                <label class="col-sm-4 control-label">Дисциплина</label>
+                <div class="col-sm-8">
+                    <select id = "disciplineName" name="disciplineName" class="select-disc">
+                        {foreach $d in $disciplines}
+                            {if $disciplineName}
+                                {if $disciplineName == $d}
+                                    <option name = "disciplineName" value = "{$d}" selected>{$d}</option>
+                                {else}
+                                    <option name = "disciplineName" value = "{$d}">{$d}</option>
+                                {/if}
+                            {else}
+                                <option name = "disciplineName" value = "{$d}">{$d}</option>
+                            {/if}
+                        {/foreach}
+                    </select>
+                </div>
+            </div><br>
+            {if $teachers}
+            <div class="form-group form-group-e">
+                <label class="col-sm-4 control-label">Преподаватель</label>
+                <div class="col-sm-8">
+                    <select id = "teacherName" name = "teacherName" class="select-disc">
+                        {foreach $u in $teachers}
+                            {if $teacherName}
+                                {if $teacherName == $u}
+                                    <option name="teacherName" value="{$u}" selected >{$u}</option>
+                                {else}
+                                    <option name="teacherName" value="{$u}">{$u}</option>
+                                {/if}
+                            {else}
+                                 <option name="teacherName" value="{$u}">{$u}</option>
+                            {/if}
+                        {/foreach}
+                    </select>
+                </div>
+            </div><br>
+            {/if}
+            <button style = "margin-top: 30px;" class="center-block btn btn-primary" onclick="submit()">{if $viktId}Редактировать{else}Создать{/if}</button>
+        </div>
+    </div>
+{/deltemplate}

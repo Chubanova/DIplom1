@@ -1,0 +1,414 @@
+{namespace forms}
+/**
+ * Default template for form input. Accepted types: text, checkbox, radio, select, number, password (type argument).
+ * If the type is unknown <input type="{$type}" name="{$name}" value="{$val}" /> is returned.
+ * Pass the options argument for inputs providing several choices for a value (select, radio, checkbox types).
+ * Pass the values argument if value is multiple (checkbox type).
+ *
+ * @param id : string
+ * @param name : string
+ * @param type : string
+ * @param? val : string
+ * @param? values : list<?>
+ * @param? options : list<[value : ?, label : ?]>
+ * @param? placeholder : string
+ */
+{template .formInput}
+    {switch $type}
+            {case 'select'}
+                <select id="{$id}" class="form-control" name="{$name}">
+                    {if $options and isNonnull($options)}
+                        {foreach $opt in $options}
+                            <option value="{$opt.value}" {if $opt.value == $val}selected{/if}>
+                                {$opt.label}
+                            </option>
+                        {/foreach}
+                    {/if}
+                </select>
+            {case 'radio'}
+                {foreach $opt in $options}
+                    <div class="radio" id="{$id}"><label><input
+                        type="radio" name="{$name}" value="{$opt.value}" {if $opt.value == $val}checked{/if}
+                    >{$opt.label}</label></div>
+                {/foreach}
+            {case 'checkbox'}
+                {if $options and isNonnull($options)}
+                    {foreach $opt in $options}
+                        <div class="checkbox" id="{$id}"><label><input
+                            type="checkbox" name="{$name}" value="{$opt.value}"
+                            {if $values and isNonnull($values)}
+                                {foreach $value in $values}
+                                    {if $value == $opt.value}checked{/if}
+                                {/foreach}
+                            {/if}
+                        >{$opt.label}</label></div>
+                    {/foreach}
+                {/if}
+            {case 'textarea'}
+                <textarea id="{$id}" class="form-control" name="{$name}" value="{$val ?: ''}"></textarea>
+            {case 'float'}
+                <input type="number" class="form-control" step="0.01" id="{$id}" name="{$name}" value="{$val ?: '0'}" />
+            {default}
+                <input
+                        class="form-control"
+                        type="{$type}"
+                        name="{$name}"
+                        id="{$id}"
+                        value="{$val ?: ''}"
+                        placeholder="{$placeholder?:''}"/>
+        {/switch}
+{/template}
+
+/**
+ * Default bootstrap form group for single input with error message above.
+ * Default CSS classes for label and input are col-sm-4 and col-sm-8 correspondingly.
+ *
+ * @param id : string
+ * @param label : string
+ * @param? placeholder : string
+ * @param? error : string
+ * @param? labelClass : string
+ * @param? inputClass : string
+ */
+{template .formInputGroup}
+  <div class="form-group {if $error and isNonnull($error)}has-error{/if}">
+    {if $error and isNonnull($error)}
+        <div class="col-sm-12 control-label">
+            <div align="center">{$error}</div>
+        </div>
+    {/if}
+    <label class="{$labelClass ?: 'col-sm-4'} control-label" for="{$id}">
+        {$label}
+    </label>
+    <div class="{$inputClass ?: 'col-sm-8'}">
+        {call .formInput data="all"}
+            {param placeholder : $placeholder ?: $label /}
+        {/call}
+    </div>
+  </div>
+{/template}
+
+/**
+ * @param id : string
+ * @param label : string
+ * @param? placeholder : string
+ * @param? error : string
+ * @param? labelClass : string
+ * @param? inputClass : string
+ */
+{template .formProfileEdit}
+  <div class="form-group {if $error and isNonnull($error)}has-error{/if}">
+    {if $error and isNonnull($error)}
+        <div class="col-sm-12 control-label">
+            <div align="center">{$error}</div>
+        </div>
+    {/if}
+    <label class="{$labelClass ?: 'col-sm-4'} control-label" for="{$id}">
+        {$label}
+    </label>
+    <div class="{$inputClass ?: 'col-sm-8'}">
+        {call .formInput data="all"}
+            {param val : $placeholder ?: $label /}
+        {/call}
+    </div>
+  </div>
+{/template}
+
+
+/**
+* Default deltemplate to be called in default form template.
+*/
+{deltemplate formInputGroup variant="'default'"}
+    {call forms.formInputGroup data="all" /}
+{/deltemplate}
+
+
+/**
+* Simple html form with error message, label and input for every field.
+* First 5 arguments are extracted from form object and you don't need to pass them explicitly.
+* You can specify CSS classes for form, label, input and submit tags. If it's not enough you can create
+* {deltemplate formInputGroup variant="'...'"} and pass its name to the form template. If it's still not enough
+* you can create your own form template and pass your own deltemplate in it. :)
+* Default CSS classes for form and submit tags are 'form-horizontal' and 'center-block btn btn-primary'.
+* Default form input group deltemplate is 'default', and CSS classes for input and label tags are the same as
+* default in forms.formInputGroup template.
+*
+* @param fields : list<[name : string, label : string, type : string, value : ?, values : list<?>, error : ?, options : list<[value : ?, label : ?]>]>
+* @param action : string
+* @param submitLabel : string
+* @param? failed : bool
+* @param? message : string
+* @param? formClass : string
+* @param? formInputGroupDelegate : string
+* @param? submitClass : string
+* @param? labelClass : string
+* @param? inputClass : string
+*/
+{template .simpleForm}
+    <form class="{$formClass ?: 'form-horizontal'}" action="{$action}" method="POST" accept-charset="UTF-8">
+            {if $message and isNonnull($message)}
+                <div class="form-group {if $failed}has-error{else}has-success{/if}">
+                    <div class="col-sm-12 control-label">
+                        <div align="center">{$message}</div>
+                    </div>
+                </div>
+            {/if}
+            {foreach $field in $fields}
+                {let $delTemplateName : $formInputGroupDelegate ?: 'default' /}
+                {delcall formInputGroup variant="$delTemplateName" data="all"}
+                    {param id : $field.name/}
+                    {param label : $field.label/}
+                    {param name : $field.name/}
+                    {param type : $field.type/}
+                    {param val: $field.value/}
+                    {param values : $field.values/}
+                    {param options : $field.options/}
+                    {param error : $field.error/}
+                    {param inputClass : $inputClass /}
+                    {param labelClass : $labelClass /}
+                {/delcall}
+            {/foreach}
+            {if $ij.csrfName}
+                <input type="hidden"  name="{$ij.csrfName}" value="{$ij.csrfValue}"/>
+            {/if}
+            <br>
+            <button type="submit" class="{$submitClass ?: 'center-block btn btn-primary'}">{$submitLabel}</button>
+    </form>
+{/template}
+
+/**
+* @param fields : list<[name : string, label : string, type : string, value : ?, values : list<?>, error : ?, options : list<[value : ?, label : ?]>]>
+* @param action : string
+* @param submitLabel : string
+* @param login : string
+* @param? failed : bool
+* @param? message : string
+* @param? formClass : string
+* @param? formInputGroupDelegate : string
+* @param? submitClass : string
+* @param? labelClass : string
+* @param? inputClass : string
+* @param? teachers : list
+* @param? roles : list
+* @param? isAdmin : list
+* @param? role
+* @param? teacherName
+*/
+{template .formEditUser}
+    <form class="{$formClass ?: 'form-horizontal'}" action="{$action}" method="POST" accept-charset="UTF-8">
+            {if $message and isNonnull($message)}
+                <div class="form-group {if $failed}has-error{else}has-success{/if}">
+                    <div class="col-sm-12 control-label">
+                        <div align="center">{$message}</div>
+                    </div>
+                </div>
+            {/if}
+            {foreach $field in $fields}
+                {let $delTemplateName : $formInputGroupDelegate ?: 'default' /}
+                {delcall formInputGroup variant="$delTemplateName" data="all"}
+                    {param id : $field.name/}
+                    {param label : $field.label/}
+                    {param name : $field.name/}
+                    {param type : $field.type/}
+                    {param val: $field.value/}
+                    {param values : $field.values/}
+                    {param options : $field.options/}
+                    {param error : $field.error/}
+                    {param inputClass : $inputClass /}
+                    {param labelClass : $labelClass /}
+                {/delcall}
+            {/foreach}
+            {if $isAdmin}
+                <div class="form-group">
+                    <label class="col-sm-4 control-label">Преподаватель (для студентов)</label>
+                        <div class="col-sm-8">
+                            <select name="ownerId" class="select-disc">
+                                {if $teacherName}
+                                    <option name="ownerId"></option>
+                                    {foreach $u in $teachers}
+                                    {if $teacherName == $u}
+                                        <option name="ownerId" value="{$u}" selected>{$u}</option>
+                                    {else}
+                                        <option name="ownerId" value="{$u}">{$u}</option>
+                                    {/if}
+                                    {/foreach}
+                                {else}
+                                    <option name="ownerId" selected></option>
+                                    {foreach $u in $teachers}
+                                        <option name="ownerId" value="{$u}">{$u}</option>
+                                    {/foreach}
+                                {/if}
+                            </select>
+                        </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-4 control-label">Роль</label>
+                        <div class="col-sm-8">
+                            <select name="role" class="select-disc">
+                            {foreach $u in $roles}
+                            {if $role == $u}
+                                <option name="role" value="{$u}" selected>{$u}</option>
+                            {else}
+                                <option name="role" value="{$u}">{$u}</option>
+                            {/if}
+                            {/foreach}
+                            </select>
+                        </div>
+                </div>
+            {/if}
+            {if $ij.csrfName}
+                <input type="hidden"  name="login"  value="{$login}"/>
+                <input type="hidden"  name="{$ij.csrfName}" value="{$ij.csrfValue}"/>
+            {/if}
+            <button type="submit" class="{$submitClass ?: 'center-block btn btn-primary'}">{$submitLabel}</button>
+    </form>
+{/template}
+
+/**
+*Template for testing forms to be called in main menu template.
+*
+* @param? formData : ?
+*/
+{deltemplate content variant="'formTest'"}
+    {call .simpleForm data="$formData" /}
+{/deltemplate}
+
+/**
+* User registration form
+* @param fields : list<[name : string, label : string, type : string, value : ?, values : list<?>, error : ?, options : list<[value : ?, label : ?]>]>
+* @param action : string
+* @param submitLabel : string
+* @param? failed : bool
+* @param? message : string
+* @param? formClass : string
+* @param? formInputGroupDelegate : string
+* @param? submitClass : string
+* @param? labelClass : string
+* @param? inputClass : string
+* @param? teachers : list
+* @param? roles : list
+* @param? isAdmin : list
+*/
+{template .userRegistrationForm}
+    <form class="{$formClass ?: 'form-horizontal'}" action="{$action}" method="POST" accept-charset="UTF-8">
+            {if $message and isNonnull($message)}
+                <div class="form-group {if $failed}has-error{else}has-success{/if}">
+                    <div class="col-sm-12 control-label">
+                        <div align="center">{$message}</div>
+                    </div>
+                </div>
+            {/if}
+            {foreach $field in $fields}
+                {let $delTemplateName : $formInputGroupDelegate ?: 'default' /}
+                {delcall formInputGroup variant="$delTemplateName" data="all"}
+                    {param id : $field.name/}
+                    {param label : $field.label/}
+                    {param name : $field.name/}
+                    {param type : $field.type/}
+                    {param val: $field.value/}
+                    {param values : $field.values/}
+                    {param options : $field.options/}
+                    {param error : $field.error/}
+                    {param inputClass : $inputClass /}
+                    {param labelClass : $labelClass /}
+                {/delcall}
+            {/foreach}
+            {if $isAdmin}
+            <div class="form-group">
+                <label class="col-sm-4 control-label">Преподаватель (для студентов)</label>
+                <div class="col-sm-8">
+                    <select name="ownerId" class="select-disc">
+                        <option name="ownerId" selected></option>
+                    {foreach $u in $teachers}
+                        <option name="ownerId" value="{$u}">{$u}</option>
+                    {/foreach}
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                 <label class="col-sm-4 control-label">Роль</label>
+                 <div class="col-sm-8">
+                     <select name="role" class="select-disc">
+                     {foreach $u in $roles}
+                         <option name="role" value="{$u}">{$u}</option>
+                     {/foreach}
+                     </select>
+                 </div>
+            </div>
+            {/if}
+            {if $ij.csrfName}
+                <input type="hidden"  name="{$ij.csrfName}" value="{$ij.csrfValue}"/>
+            {/if}
+            <button class="{$submitClass ?: 'center-block btn btn-primary'}" type="submit">{$submitLabel}</button>
+    </form>
+{/template}
+
+/**
+* Form for adding discipline
+* @param fields : list<[name : string, label : string, type : string, value : ?, values : list<?>, error : ?, options : list<[value : ?, label : ?]>]>
+* @param action : string
+* @param submitLabel : string
+* @param? failed : bool
+* @param? message : string
+* @param? formClass : string
+* @param? formInputGroupDelegate : string
+* @param? submitClass : string
+* @param? labelClass : string
+* @param? inputClass : string
+*/
+{template .newDiscForm}
+    <form class="{$formClass ?: 'form-horizontal'}" action="{$action}" method="POST" accept-charset="UTF-8">
+            {if $message and isNonnull($message)}
+                <div class="form-group {if $failed}has-error{else}has-success{/if}">
+                    <div class="col-sm-12 control-label">
+                        <div align="center">{$message}</div>
+                    </div>
+                </div>
+            {/if}
+            {foreach $field in $fields}
+                {let $delTemplateName : $formInputGroupDelegate ?: 'default' /}
+                {delcall formDiscInputGroup variant="$delTemplateName" data="all"}
+                    {param id : $field.name/}
+                    {param label : $field.label/}
+                    {param name : $field.name/}
+                    {param type : $field.type/}
+                    {param val: $field.value/}
+                    {param values : $field.values/}
+                    {param options : $field.options/}
+                    {param error : $field.error/}
+                    {param inputClass : $inputClass /}
+                    {param labelClass : $labelClass /}
+                {/delcall}
+            {/foreach}
+            {if $ij.csrfName}
+                <input type="hidden"  name="{$ij.csrfName}" value="{$ij.csrfValue}"/>
+            {/if}
+            <br>
+            <button type="submit" class="{$submitClass ?: 'center-block btn btn-primary btn-add-d'}">{$submitLabel}</button>
+    </form>
+{/template}
+
+/**
+ * @param id : string
+ * @param label : string
+ * @param? placeholder : string
+ * @param? error : string
+ */
+{template .formDiscInputGroup}
+  <div class="form-group {if $error and isNonnull($error)}has-error{/if}">
+    {if $error and isNonnull($error)}
+        <div class="col-sm-12 control-label">
+            <div align="center">{$error}</div>
+        </div>
+    {/if}
+    <div class="col-sm-8-ext">
+        {call .formInput data="all"}
+            {param placeholder : $placeholder ?: $label /}
+        {/call}
+    </div>
+  </div>
+{/template}
+
+{deltemplate formDiscInputGroup variant="'default'"}
+    {call forms.formDiscInputGroup data="all" /}
+{/deltemplate}

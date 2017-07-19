@@ -1,0 +1,21 @@
+{namespace profile}
+/**
+* User profile page
+* @param? username : string
+*/
+{deltemplate content variant="'profileAuth'"}
+    <div class="page-header">
+        <h2>Панель администратора</h2>
+    </div>
+    <div>
+        <form action="/users">
+            <button class="btn-acp" type="submit">Пользователи</button>
+        </form>
+        <form action="/dis">
+            <button class="btn-acp" type="submit">Дисциплины</button>
+        </form>
+        <form action="/viktorines">
+            <button class="btn-acp" type="submit">Викторины</button>
+        </form>
+    </div>
+{/deltemplate}

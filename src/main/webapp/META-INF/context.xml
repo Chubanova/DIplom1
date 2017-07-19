@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Context>
+    <Resource name="java:comp/Validator" auth="Container"
+              type="javax.validation.Validator"
+              factory="com.mesaeva.viktorines.util.ValidatorFactory"/>
+    <Resource name="viktorines/SoyTofu" auth="Container"
+              type="com.google.template.soy.tofu.SoyTofu"
+              factory="com.mesaeva.viktorines.util.SoyTofuFactory"/>
+    <Resource name="jdbc/myDB" auth="Container" type="javax.sql.DataSource"
+              maxTotal="100" maxIdle="30" maxWaitMillis="10000"
+              username="Victorins" password="78Ip53rfIC" driverClassName="com.mysql.jdbc.Driver"
+              url="jdbc:mysql://localhost:3306/myDB?useUnicode=true&amp;characterEncoding=utf8"/>
+    <Resource name="viktorines/SessionFactory" auth="Container"
+              type="org.hibernate.SessionFactory"
+              factory="com.mesaeva.viktorines.util.SessionFactory"
+              closeMethod="close"/>
+</Context>

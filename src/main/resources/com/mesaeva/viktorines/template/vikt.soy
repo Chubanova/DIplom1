@@ -1,0 +1,55 @@
+{namespace vikt}
+/**
+*  page
+* @param? question : map<[questionViktId: int,
+                         questionNumber: int]
+*/
+{deltemplate content variant="'My_viktorine'"}
+    <script src="/static/js/soyutils.js"></script>
+    <script src="/static/js/vikt_a.js"></script>
+    <script src="/static/js/viktorine_print.js"></script>
+    <script>
+        var qNumber = {$question.questionNumber};
+        var vID = {$question.questionViktId};
+        var csrf = {$ij.csrfValue};
+    </script>
+    <div id="control-btns" class="control-btns">
+        <button id="check" class="ctrl-btn" onclick="check()">Проверить</button>
+        <button id="back" class="ctrl-btn" onclick="back()">Предыдущий</button>
+        <button id="next" class="ctrl-btn" onclick="next()">Следующий</button>
+        <button id="results" class="ctrl-btn" onclick="complete()">Результаты</button>
+    </div>
+    <div id="question" class="question">
+//        <div class="page-header">
+//            <h2>{$question.questionText}</h2>
+//        </div>
+//        <div class="row answers">
+//        {foreach $answer in $answers}
+//            <p id="id{$answer.answerId}"><input type="checkbox" name="answerId" value="{$answer.answerId}">{$answer.answerText}</p>
+//        {/foreach}
+//        </div>
+    </div>
+    <div id="stat" class="stat"></div>
+    <br><br>
+{/deltemplate}
+/**
+*  page
+* @param? question
+*/
+{deltemplate content variant="'viktorine'"}
+    <script src="/static/js/soyutils.js"></script>
+    <script src="/static/js/vikt.js"></script>
+    <script src="/static/js/viktorine_print.js"></script>
+    <script type="text/javascript">
+        var qNumber = {$question.questionNumber};
+        var vID = {$question.questionViktId};
+        var csrf = {$ij.csrfValue};
+    </script>
+    <div id="question" class="question">
+    </div>
+    <br><br>
+    <div class="control-btns">
+        <button id="send" class="ctrl-btn" onclick="answer()">Ответить</button>
+    </div>
+    <div id="stat" class="stat"></div>
+{/deltemplate}

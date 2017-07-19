@@ -1,0 +1,23 @@
+/**
+ * User registration form
+ * @param? formData : map
+ * @param? teachers
+ * @param? roles
+ * @param? isAdmin
+ */
+{deltemplate content variant="'newuser'"}
+<div class="page-header">
+        <h1>Регистрация</h1>
+</div>
+
+<div class="row">
+           <div class="col-sm-6">
+               {call forms.userRegistrationForm data="$formData"}
+                {param teachers : $teachers /}
+                {param roles : $roles /}
+                {param isAdmin : $isAdmin /}
+               {/call}
+           </div>
+</div>
+{/deltemplate}
+
